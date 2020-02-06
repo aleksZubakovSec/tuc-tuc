@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,20 +9,19 @@ public class Camera : MonoBehaviour
     [SerializeField] private GameObject player;
 
     [Header("Parameters")]
-    [SerializeField] private float speed;
+    [SerializeField] private float speed = 0.125f;
 
+    private Vector3 offset;
+
+    private void Start()
+    {
+        offset = new Vector3(0f, 0f, transform.position.z);
+    }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         var interpolationSpeed = speed * Time.deltaTime;
-        
-        var playerPosition = player.transform.position;
-        var oldCamerPosition = transform.position;
-
-        var x = Mathf.Lerp(oldCamerPosition.x, playerPosition.x, interpolationSpeed);
-        var y = Mathf.Lerp(oldCamerPosition.y, playerPosition.y, interpolationSpeed); 
-        
-        transform.position = new Vector3(x, y, oldCamerPosition.z);
+        transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, interpolationSpeed);
     }
 }
