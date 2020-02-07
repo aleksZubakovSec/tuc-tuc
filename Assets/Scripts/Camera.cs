@@ -11,6 +11,10 @@ public class Camera : MonoBehaviour
     [Header("Parameters")]
     [SerializeField] private float speed = 0.125f;
 
+    [SerializeField] private float smoothTime = 10f;
+    [SerializeField] private Vector3 velocity = Vector3.zero;
+    
+    
     private Vector3 offset;
 
     private void Start()
@@ -21,7 +25,7 @@ public class Camera : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        var interpolationSpeed = speed * Time.deltaTime;
-        transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, interpolationSpeed);
+        // var interpolationSpeed = speed * Time.deltaTime;
+        transform.position = Vector3.SmoothDamp(transform.position, player.transform.position + offset, ref velocity, smoothTime * Time.deltaTime);
     }
 }
