@@ -82,6 +82,11 @@ public class PlayerMovementFinal : MonoBehaviour
             StartCoroutine(SqueezeJump(1.25f, 0.9f, 0.1f));
         }
 
+        if (wasOnGround && !onGround)
+        {
+            anim.SetBool(Jumped, true);
+        }
+        
         if (Input.GetButton("Jump") && onGround)
         {
             Jump();
