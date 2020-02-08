@@ -32,7 +32,8 @@ public class PlayerMovementFinal : MonoBehaviour
     private Vector2 direction;
     private LayerMask lastLayer;
     private static readonly int Speed = Animator.StringToHash("speed");
-
+    private static readonly int Jumped = Animator.StringToHash("jumped");
+    
     private void Awake()
     {
         originalScale = transform.localScale;
@@ -76,7 +77,8 @@ public class PlayerMovementFinal : MonoBehaviour
         // }
 
         if (!wasOnGround && onGround)
-        {
+        {    
+            anim.SetBool(Jumped, false);
             StartCoroutine(SqueezeJump(1.25f, 0.9f, 0.1f));
         }
 
@@ -90,6 +92,8 @@ public class PlayerMovementFinal : MonoBehaviour
     {
         rb.velocity = new Vector2(rb.velocity.x, 0f);
         rb.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
+        
+        anim.SetBool(Jumped, true);
         StartCoroutine(SqueezeJump(0.5f, 1.2f, 0.1f));
     }
 
