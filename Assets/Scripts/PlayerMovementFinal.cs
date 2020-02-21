@@ -9,7 +9,9 @@ public class PlayerMovementFinal : MonoBehaviour
 {
     [Header("Required")] [SerializeField] private Animator anim;
     [SerializeField] private Rigidbody2D rb;
-
+    [SerializeField] private Collider2D collider2D; 
+    
+    
     [Header("Horizontal movement")] [SerializeField]
     private float horizontalSpeed = 10f;
 
@@ -33,7 +35,9 @@ public class PlayerMovementFinal : MonoBehaviour
     private LayerMask lastLayer;
     private static readonly int Speed = Animator.StringToHash("speed");
     private static readonly int Jumped = Animator.StringToHash("jumped");
-    
+
+    public bool dead = false;
+
     private void Awake()
     {
         originalScale = transform.localScale;
@@ -77,7 +81,7 @@ public class PlayerMovementFinal : MonoBehaviour
         // }
 
         if (!wasOnGround && onGround)
-        {    
+        {
             anim.SetBool(Jumped, false);
             StartCoroutine(SqueezeJump(1.25f, 0.9f, 0.1f));
         }
@@ -86,7 +90,7 @@ public class PlayerMovementFinal : MonoBehaviour
         {
             anim.SetBool(Jumped, true);
         }
-        
+
         if (Input.GetButton("Jump") && onGround)
         {
             Jump();
@@ -97,20 +101,27 @@ public class PlayerMovementFinal : MonoBehaviour
     {
         rb.velocity = new Vector2(rb.velocity.x, 0f);
         rb.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
-        
+
         anim.SetBool(Jumped, true);
         StartCoroutine(SqueezeJump(0.5f, 1.2f, 0.1f));
     }
 
     private void FixedUpdate()
     {
+        if (dead)
+        {
+            return;
+        }
         MovePlayer(direction.x);
         UpdatePhysics();
     }
 
     private void MovePlayer(float x)
     {
-        var deltaX = x * horizontalSpeed; /* Time.deltaTime */
+        // TODO: fix deltaTime multiplier ASAP
+        var deltaX = x * horizontalSpeed; /** Time.deltaTime*/
+        ;
+
 
         rb.AddForce(Vector2.right * deltaX);
 
@@ -194,6 +205,24 @@ public class PlayerMovementFinal : MonoBehaviour
         }
     }
 
+    private IEnumerator DieAnimation(float seconds)
+    {
+        var t = 0f;
+        var angle = movingRight ? 90f : -90f;
+
+        var newPosition = transform.position + Vector3.down * 0.4f; 
+        
+        while (t <= 1f)
+        {
+            t += Time.deltaTime / seconds;
+            transform.localRotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0f, 0f, angle),
+                t);
+            transform.position = Vector3.Lerp(transform.position, newPosition, t);
+            
+            yield return null;
+        }
+    }
+
     private void OnDrawGizmos()
     {
         var shiftFromCenter = movingRight ? raysCenterShift : -raysCenterShift;
@@ -204,5 +233,30 @@ public class PlayerMovementFinal : MonoBehaviour
             transformPosition + Vector3.down * groundLength + Vector3.right * (distanceBetweenRays - shiftFromCenter));
         Gizmos.DrawLine(transformPosition - Vector3.right * (distanceBetweenRays + shiftFromCenter),
             transformPosition + Vector3.down * groundLength - Vector3.right * (distanceBetweenRays + shiftFromCenter));
+    }
+
+    private void Die()
+    {
+        collider2D.enabled = false;
+        dead = true;
+        GetComponent<BoxCollider2D>().enabled = false;
+        StartCoroutine(DieAnimation(3f));
+    }
+    
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag.Equals("Club"))
+        {
+            ContactPoint2D[] arr = { };
+            for (int i = 0; i < arr.Length; i++)
+            {
+                    
+                print(arr[i].point);
+            }
+            other.GetContacts(arr);
+            print(arr);
+            
+            Die();
+        }
     }
 }

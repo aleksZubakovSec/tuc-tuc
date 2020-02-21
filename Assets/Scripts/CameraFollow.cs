@@ -6,18 +6,18 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    [Header("Required")] 
-    [SerializeField] private GameObject player;
+    [Header("Required")] [SerializeField] private GameObject player;
 
-    [Header("Parameters")]
-    [SerializeField] private float speed = 5f;
+    [Header("Parameters")] [SerializeField]
+    private float speed = 5f;
+
     [SerializeField] private float smoothTime = 1f;
     [SerializeField] private Vector3 offset = Vector3.zero;
 
     private Camera mainCamera;
     private Rigidbody2D playerRb;
     private Vector3 velocity = Vector3.zero;
-    
+
     private void Start()
     {
         mainCamera = Camera.main;
@@ -45,10 +45,12 @@ public class CameraFollow : MonoBehaviour
         }
 
         var playerVelocityMagnitude = playerRb.velocity.magnitude;
-        var currentSpeed = playerVelocityMagnitude > this.speed ? playerVelocityMagnitude : speed;
+        var currentSpeed = playerVelocityMagnitude > speed ? playerVelocityMagnitude : speed;
         // TODO: mb it's better to change to MoveTowards
         transform.position = Vector3.SmoothDamp(oldPosition, newPosition, ref velocity, smoothTime, currentSpeed);
+        // transform.position = Vector3.MoveTowards(oldPosition, newPosition, currentSpeed * Time.deltaTime);
     }
+
 
     private Vector3 GetThreshold()
     {
@@ -59,11 +61,14 @@ public class CameraFollow : MonoBehaviour
 
         return threshold - offset;
     }
-    
+
     private void OnDrawGizmos()
     {
-        Vector3 border = GetThreshold();
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position, new Vector3(border.x * 2, border.y * 2, 1));
+        if (mainCamera != null)
+        {
+            Vector3 border = GetThreshold();
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(transform.position, new Vector3(border.x * 2, border.y * 2, 1));
+        }
     }
 }
