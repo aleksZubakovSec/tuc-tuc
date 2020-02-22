@@ -19,6 +19,7 @@ public class PlayerMovementFinal : MonoBehaviour
     [SerializeField] private float linearDrag = 4f;
 
     [Header("Jump")] [SerializeField] private float jumpSpeed = 10f;
+    [SerializeField] private float jumpLinearDrag = 4f;
     [SerializeField] private float fallMultiplier = 1.25f;
     [SerializeField] private float groundLength = 0.6f;
     [SerializeField] private float gravity = 4f;
@@ -47,8 +48,9 @@ public class PlayerMovementFinal : MonoBehaviour
     {
         var shiftFromCenter = movingRight ? raysCenterShift : -raysCenterShift;
         var transformPosition = transform.position;
-        return Physics2D.Raycast(transformPosition + Vector3.right * (distanceBetweenRays - shiftFromCenter),
-                   Vector2.down, groundLength, groundLayer) ||
+        RaycastHit2D raycastHit2D = Physics2D.Raycast(transformPosition + Vector3.right * (distanceBetweenRays - shiftFromCenter),
+            Vector2.down, groundLength, groundLayer);
+        return raycastHit2D ||
                Physics2D.Raycast(transformPosition - Vector3.right * (distanceBetweenRays + shiftFromCenter),
                    Vector2.down, groundLength, groundLayer);
     }
@@ -164,7 +166,7 @@ public class PlayerMovementFinal : MonoBehaviour
         else
         {
             rb.gravityScale = gravity;
-            rb.drag = linearDrag * 0.25f;
+            rb.drag = jumpLinearDrag * 0.25f;
             if (rb.velocity.y < 0)
             {
                 rb.gravityScale = gravity * fallMultiplier;
