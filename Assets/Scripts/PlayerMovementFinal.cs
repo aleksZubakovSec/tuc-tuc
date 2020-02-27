@@ -9,10 +9,11 @@ public class PlayerMovementFinal : MonoBehaviour
 {
     [Header("Required")] [SerializeField] private Animator anim;
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private Collider2D collider2D; 
-    
-    
-    [Header("Horizontal movement")] [SerializeField]
+    [SerializeField] private Collider2D collider2D;
+
+
+    [Header("Horizontal movement")]
+    [SerializeField]
     private float horizontalSpeed = 10f;
 
     [SerializeField] private float maxSpeed = 8f;
@@ -212,15 +213,15 @@ public class PlayerMovementFinal : MonoBehaviour
         var t = 0f;
         var angle = movingRight ? 90f : -90f;
 
-        var newPosition = transform.position + Vector3.down * 0.4f; 
-        
+        var newPosition = transform.position + Vector3.down * 0.4f;
+
         while (t <= 1f)
         {
             t += Time.deltaTime / seconds;
             transform.localRotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0f, 0f, angle),
                 t);
             transform.position = Vector3.Lerp(transform.position, newPosition, t);
-            
+
             yield return null;
         }
     }
@@ -244,7 +245,7 @@ public class PlayerMovementFinal : MonoBehaviour
         GetComponent<BoxCollider2D>().enabled = false;
         StartCoroutine(DieAnimation(3f));
     }
-    
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag.Equals("Club"))
@@ -252,12 +253,12 @@ public class PlayerMovementFinal : MonoBehaviour
             ContactPoint2D[] arr = { };
             for (int i = 0; i < arr.Length; i++)
             {
-                    
+
                 print(arr[i].point);
             }
             other.GetContacts(arr);
             print(arr);
-            
+
             Die();
         }
     }
