@@ -262,4 +262,16 @@ public class PlayerMovementFinal : MonoBehaviour
             Die();
         }
     }
+
+    public void CollectedItem()
+    {
+        Debug.Log("Whoo player collected an item");
+    }
+    
+    public void CollectedItem(float a)
+    {
+        Debug.Log("Whoo player collected an item" + a);
+    }
+
+    
 }
